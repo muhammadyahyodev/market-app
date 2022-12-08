@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  name String? @unique
+  password String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Market {
+  id Int @id @default(autoincrement())
+  name String
+  branches Branch[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("markets")
+}
+
+model Worker {
+  id Int @id @default(autoincrement())
+  name String 
+  phone_number String
+  branch Branch  @relation(fields: [branch_id], references: [id])
+  branch_id Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("workers")
+
+}
+
+model Branch {
+  id Int @id @default(autoincrement())
+  name String
+  address String
+  market Market  @relation(fields: [market_id], references: [id])
+  market_id Int
+  workers Worker[]
+  products Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("branches")
+}
+
+model Product {
+  id Int @id @default(autoincrement())
+  title String
+  price Int
+  branch Branch  @relation(fields: [branch_id], references: [id])
+  branch_id Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("products")
+}
