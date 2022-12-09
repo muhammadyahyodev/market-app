@@ -44,7 +44,6 @@ export class AuthService {
       httpOnly: true,
     });
 
-    console.log(tokens);
     return tokens;
   }
 
@@ -132,7 +131,7 @@ export class AuthService {
     return tokens;
   }
 
-  async getTokens(userId: number, name: string): Promise<Tokens> {
+  private async getTokens(userId: number, name: string): Promise<Tokens> {
     const jwtPayload: JwtPayload = {
       sub: userId,
       name: name,
