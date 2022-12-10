@@ -34,10 +34,10 @@ model Market {
 
 model Worker {
   id Int @id @default(autoincrement())
-  name String 
-  phone_number String
-  branch Branch  @relation(fields: [branch_id], references: [id])
-  branch_id Int
+  name String? 
+  phone_number String?
+  branch Branch?  @relation(fields: [branch_id], references: [id])
+  branch_id Int?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -48,10 +48,10 @@ model Worker {
 
 model Branch {
   id Int @id @default(autoincrement())
-  name String
-  address String
-  market Market  @relation(fields: [market_id], references: [id])
-  market_id Int
+  name String?
+  address String?
+  market Market?  @relation(fields: [market_id], references: [id])
+  market_id Int?
   workers Worker[]
   products Product[]
 
@@ -63,10 +63,10 @@ model Branch {
 
 model Product {
   id Int @id @default(autoincrement())
-  title String
-  price Int
-  branch Branch  @relation(fields: [branch_id], references: [id])
-  branch_id Int
+  title String?
+  price Int?
+  branch Branch?  @relation(fields: [branch_id], references: [id])
+  branch_id Int?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -8,8 +8,10 @@ import { Response, Request } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthDto } from './dtos';
 import * as bcrypt from 'bcryptjs';
-import { JwtPayload, Tokens } from './types';
 import { JwtService } from '@nestjs/jwt';
+import { User } from 'src/types';
+import { Tokens } from 'src/types/tokens';
+import { JwtPayload } from 'src/types/jwt-payload.types';
 
 @Injectable()
 export class AuthService {
@@ -21,24 +23,27 @@ export class AuthService {
   async signup(authDto: AuthDto, res: Response): Promise<Tokens> {
     const { name, password } = authDto;
 
-    const condidate = await this.prisma.user.findFirst({
+    const condidate: User = await this.prisma.user.findFirst({
       where: { name },
     });
 
     if (condidate) {
-      throw new HttpException('This condidate exists', HttpStatus.FORBIDDEN);
+      throw new HttpException(
+        { reason: 'Already exists' },
+        HttpStatus.FORBIDDEN,
+      );
     }
 
-    const hashedPassword = await bcrypt.hash(password, 7);
+    const hashedPassword: string = await bcrypt.hash(password, 7);
 
-    const user = await this.prisma.user.create({
+    const user: User = await this.prisma.user.create({
       data: {
         name,
         password: hashedPassword,
       },
     });
 
-    const tokens = await this.getTokens(user.id, user.name);
+    const tokens: Tokens = await this.getTokens(user.id, user.name);
     res.cookie('refresh_token', tokens.refresh_token, {
       maxAge: 7 * 24 * 60 * 1000,
       httpOnly: true,
@@ -47,27 +52,27 @@ export class AuthService {
     return tokens;
   }
 
-  async signin(authDto: AuthDto, res: Response) {
+  async signin(authDto: AuthDto, res: Response): Promise<Tokens> {
     const { name, password } = authDto;
 
-    const user = await this.prisma.user.findFirst({
+    const user: User = await this.prisma.user.findFirst({
       where: { name },
     });
 
     if (!user) {
-      throw new HttpException(
-        'This condidate not exists',
-        HttpStatus.NOT_FOUND,
-      );
+      throw new HttpException({ reason: 'Not found' }, HttpStatus.NOT_FOUND);
     }
 
-    const passwordMatches = await bcrypt.compare(password, user.password);
+    const passwordMatches: string = await bcrypt.compare(
+      password,
+      user.password,
+    );
 
     if (!passwordMatches) {
       throw new ForbiddenException('Access denaid');
     }
 
-    const tokens = await this.getTokens(user.id, user.name);
+    const tokens: Tokens = await this.getTokens(user.id, user.name);
 
     res.cookie('refresh_token', tokens.refresh_token, {
       maxAge: 7 * 24 * 60 * 1000,
@@ -77,16 +82,16 @@ export class AuthService {
     return tokens;
   }
 
-  async logout(id: number, res: Response, req: Request) {
-    const user = await this.prisma.user.findFirst({
+  async logout(id: number, res: Response, req: Request): Promise<boolean> {
+    const user: User = await this.prisma.user.findFirst({
       where: { id },
     });
 
-    if (!user) throw new ForbiddenException('User not found');
+    if (!user) throw new ForbiddenException('Not found');
 
-    const refreshToken = req.cookies.refresh_token;
+    const refreshToken: string = req.cookies.refresh_token;
 
-    const check = await this.jwtService.verify(refreshToken, {
+    const check: Tokens = await this.jwtService.verify(refreshToken, {
       publicKey: process.env.REFRESH_TOKEN_KEY,
     });
 
@@ -98,8 +103,12 @@ export class AuthService {
     return true;
   }
 
-  async refreshTokens(id: number, res: Response, req: Request) {
-    const user = await this.prisma.user.findUnique({
+  async refreshTokens(
+    id: number,
+    res: Response,
+    req: Request,
+  ): Promise<Tokens> {
+    const user: User = await this.prisma.user.findUnique({
       where: {
         id: id,
       },
@@ -107,9 +116,9 @@ export class AuthService {
     if (!user) {
       throw new ForbiddenException('Access denied');
     }
-    const refreshToken = req.cookies.refresh_token;
+    const refreshToken: string = req.cookies.refresh_token;
 
-    const check = await this.jwtService.verify(refreshToken, {
+    const check: Tokens = await this.jwtService.verify(refreshToken, {
       publicKey: process.env.REFRESH_TOKEN_KEY,
     });
 
@@ -121,7 +130,7 @@ export class AuthService {
       throw new HttpException('Access Denaid', HttpStatus.NOT_FOUND);
     }
 
-    const tokens = await this.getTokens(user.id, user.name);
+    const tokens: Tokens = await this.getTokens(user.id, user.name);
 
     res.cookie('refresh_token', tokens.refresh_token, {
       maxAge: 7 * 24 * 60 * 1000,

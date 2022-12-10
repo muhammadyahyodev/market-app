@@ -4,6 +4,11 @@ import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { MarketsModule } from './markets/markets.module';
+import { BranchModule } from './branch/branch.module';
+import { BranchService } from './branch/branch.service';
+import { WorkersModule } from './workers/workers.module';
+import { ProductsModule } from './products/products.module';
+import { ProductsService } from './products/products.service';
 
 @Module({
   imports: [
@@ -14,8 +19,11 @@ import { MarketsModule } from './markets/markets.module';
     UsersModule,
     AuthModule,
     MarketsModule,
+    BranchModule,
+    WorkersModule,
+    ProductsModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [BranchService, ProductsService],
 })
 export class AppModule {}

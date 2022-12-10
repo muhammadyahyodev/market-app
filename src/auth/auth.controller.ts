@@ -9,9 +9,9 @@ import {
   Res,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { Tokens } from 'src/types/tokens';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dtos';
-import { Tokens } from './types';
 
 @Controller('auth')
 export class AuthController {
@@ -24,7 +24,6 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ): Promise<Tokens> {
     const create = await this.authService.signup(authDto, res);
-    console.log(create);
     return create;
   }
 

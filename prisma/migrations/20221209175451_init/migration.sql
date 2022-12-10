@@ -22,9 +22,9 @@ CREATE TABLE "markets" (
 -- CreateTable
 CREATE TABLE "workers" (
     "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
-    "phone_number" TEXT NOT NULL,
-    "branch_id" INTEGER NOT NULL,
+    "name" TEXT,
+    "phone_number" TEXT,
+    "branch_id" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -34,9 +34,9 @@ CREATE TABLE "workers" (
 -- CreateTable
 CREATE TABLE "branches" (
     "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
-    "address" TEXT NOT NULL,
-    "market_id" INTEGER NOT NULL,
+    "name" TEXT,
+    "address" TEXT,
+    "market_id" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -46,9 +46,9 @@ CREATE TABLE "branches" (
 -- CreateTable
 CREATE TABLE "products" (
     "id" SERIAL NOT NULL,
-    "title" TEXT NOT NULL,
-    "price" INTEGER NOT NULL,
-    "branch_id" INTEGER NOT NULL,
+    "title" TEXT,
+    "price" INTEGER,
+    "branch_id" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -59,10 +59,10 @@ CREATE TABLE "products" (
 CREATE UNIQUE INDEX "users_name_key" ON "users"("name");
 
 -- AddForeignKey
-ALTER TABLE "workers" ADD CONSTRAINT "workers_branch_id_fkey" FOREIGN KEY ("branch_id") REFERENCES "branches"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "workers" ADD CONSTRAINT "workers_branch_id_fkey" FOREIGN KEY ("branch_id") REFERENCES "branches"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "branches" ADD CONSTRAINT "branches_market_id_fkey" FOREIGN KEY ("market_id") REFERENCES "markets"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "branches" ADD CONSTRAINT "branches_market_id_fkey" FOREIGN KEY ("market_id") REFERENCES "markets"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "products" ADD CONSTRAINT "products_branch_id_fkey" FOREIGN KEY ("branch_id") REFERENCES "branches"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "products" ADD CONSTRAINT "products_branch_id_fkey" FOREIGN KEY ("branch_id") REFERENCES "branches"("id") ON DELETE SET NULL ON UPDATE CASCADE;
