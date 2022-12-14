@@ -8,7 +8,9 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from 'src/guards/auth-jwt.guard';
 import { Market } from 'src/types';
 import { CreateMarketDto } from './dtos/create-market.dto';
 import { UpdateMarketDto } from './dtos/update.market.dto';
@@ -18,6 +20,7 @@ import { MarketsService } from './markets.service';
 export class MarketsController {
   constructor(private readonly marketsService: MarketsService) {}
 
+  @UseGuards(AuthGuard)
   @Post('add')
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createMarketDto: CreateMarketDto): Promise<Market> {
@@ -36,6 +39,7 @@ export class MarketsController {
     return this.marketsService.getOneMarketById(Number(id));
   }
 
+  @UseGuards(AuthGuard)
   @Put('update/:id')
   @HttpCode(HttpStatus.OK)
   update(
@@ -45,6 +49,7 @@ export class MarketsController {
     return this.marketsService.updateMarket(Number(id), updateMarketDto);
   }
 
+  @UseGuards(AuthGuard)
   @Delete('delete/:id')
   @HttpCode(HttpStatus.OK)
   delete(@Param('id') id: string): Promise<Market> {

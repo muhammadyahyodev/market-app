@@ -1,3 +1,3 @@
-export class Market {
+export type Market = {
   name: string;
-}
+};

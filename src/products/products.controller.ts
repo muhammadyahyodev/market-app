@@ -8,7 +8,9 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from 'src/guards/auth-jwt.guard';
 import { Product } from 'src/types';
 import { CreateProductDto, UpdateProductDto } from './dtos';
 import { ProductsService } from './products.service';
@@ -17,6 +19,7 @@ import { ProductsService } from './products.service';
 export class ProductsController {
   constructor(private readonly productServuce: ProductsService) {}
 
+  @UseGuards(AuthGuard)
   @Post('add')
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createProductDto: CreateProductDto): Promise<Product> {
@@ -35,6 +38,7 @@ export class ProductsController {
     return this.productServuce.getOneProductById(Number(id));
   }
 
+  @UseGuards(AuthGuard)
   @Put('update/:id')
   @HttpCode(HttpStatus.OK)
   update(
@@ -44,6 +48,7 @@ export class ProductsController {
     return this.productServuce.updateProduct(Number(id), updateProductDto);
   }
 
+  @UseGuards(AuthGuard)
   @Delete('delete/:id')
   @HttpCode(HttpStatus.OK)
   delete(@Param('id') id: string): Promise<Product> {
