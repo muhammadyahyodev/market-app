@@ -25,7 +25,7 @@ export class MarketsService {
   }
 
   async getAllMarkets(): Promise<Market[]> {
-    const markets = await this.prisma.market.findMany();
+    const markets = await this.prisma.market.findMany(  );
     return markets;
   }
 

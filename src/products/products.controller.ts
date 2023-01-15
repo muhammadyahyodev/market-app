@@ -26,12 +26,14 @@ export class ProductsController {
     return this.productServuce.createProduct(createProductDto);
   }
 
+  @UseGuards(AuthGuard)
   @Get()
   @HttpCode(HttpStatus.OK)
   getAll(): Promise<Product[]> {
     return this.productServuce.getAllProduct();
   }
 
+  @UseGuards(AuthGuard)
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   getOne(@Param('id') id: string): Promise<Product> {

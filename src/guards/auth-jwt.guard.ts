@@ -1,4 +1,9 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Observable } from 'rxjs';
 
@@ -9,14 +14,21 @@ export class AuthGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const req = context.switchToHttp().getRequest();
+    try {
+      const req = context.switchToHttp().getRequest();
 
-    const token = req.cookies.refreshToken;
+      const authHeader = req.headers.authorization;
 
-    const user = this.jwtService.verify(token, {
-      publicKey: process.env.REFRESH_TOKEN_KEY,
-    });
+      const bearer = authHeader.split(' ')[0];
+      const token = authHeader.split(' ')[1];
 
-    return true;
+      const user = this.jwtService.verify(token, {
+        publicKey: process.env.ACCESS_TOKEN_KEY,
+      });
+
+      return true;
+    } catch (error) {
+      throw new ForbiddenException('Access denaid');
+    }
   }
 }

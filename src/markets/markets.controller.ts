@@ -27,6 +27,7 @@ export class MarketsController {
     return this.marketsService.createMarket(createMarketDto);
   }
 
+  @UseGuards(AuthGuard)
   @Get()
   @HttpCode(HttpStatus.OK)
   getAll(): Promise<Market[]> {
@@ -40,7 +41,7 @@ export class MarketsController {
   }
 
   @UseGuards(AuthGuard)
-  @Put('update/:id')
+  @Put(':id')
   @HttpCode(HttpStatus.OK)
   update(
     @Param('id') id: string,
@@ -50,7 +51,7 @@ export class MarketsController {
   }
 
   @UseGuards(AuthGuard)
-  @Delete('delete/:id')
+  @Delete(':id')
   @HttpCode(HttpStatus.OK)
   delete(@Param('id') id: string): Promise<Market> {
     return this.marketsService.deleteMarket(Number(id));

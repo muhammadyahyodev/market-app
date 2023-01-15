@@ -43,13 +43,12 @@ export class AuthController {
     return await this.authService.logout(Number(id), res, req);
   }
 
-  @Post('refreshtoken/:id')
+  @Post('refreshtoken')
   @HttpCode(HttpStatus.OK)
   async refreshToken(
-    @Param('id') id: string,
     @Res({ passthrough: true }) res: Response,
     @Req() req: Request,
   ) {
-    return await this.authService.refreshTokens(Number(id), res, req);
+    return await this.authService.refreshTokens(res, req);
   }
 }

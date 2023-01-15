@@ -36,6 +36,12 @@ export class ProductsService {
 
   async getOneProductById(id: number): Promise<Product> {
     const product = await this.prisma.product.findFirst({ where: { id } });
+    if (!product) {
+      throw new HttpException(
+        'Product with this id not found!',
+        HttpStatus.NOT_FOUND,
+      );
+    }
     return product;
   }
 

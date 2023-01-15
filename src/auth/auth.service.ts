@@ -91,11 +91,11 @@ export class AuthService {
 
     const refreshToken: string = req.cookies.refresh_token;
 
-    const check: Tokens = await this.jwtService.verify(refreshToken, {
+    const check = await this.jwtService.verify(refreshToken, {
       publicKey: process.env.REFRESH_TOKEN_KEY,
     });
 
-    if (check.id !== user.id) {
+    if (check.sub !== user.id) {
       throw new HttpException('Access Denaid', HttpStatus.NOT_FOUND);
     }
 
@@ -103,34 +103,14 @@ export class AuthService {
     return true;
   }
 
-  async refreshTokens(
-    id: number,
-    res: Response,
-    req: Request,
-  ): Promise<Tokens> {
-    const user: User = await this.prisma.user.findUnique({
-      where: {
-        id: id,
-      },
-    });
-    if (!user) {
-      throw new ForbiddenException('Access denied');
-    }
+  async refreshTokens(res: Response, req: Request): Promise<Tokens> {
     const refreshToken: string = req.cookies.refresh_token;
 
-    const check: Tokens = await this.jwtService.verify(refreshToken, {
+    const check = await this.jwtService.verify(refreshToken, {
       publicKey: process.env.REFRESH_TOKEN_KEY,
     });
 
-    if (!user || !check) {
-      throw new HttpException('Access Denaid', HttpStatus.NOT_FOUND);
-    }
-
-    if (check.id !== user.id) {
-      throw new HttpException('Access Denaid', HttpStatus.NOT_FOUND);
-    }
-
-    const tokens: Tokens = await this.getTokens(user.id, user.name);
+    const tokens: Tokens = await this.getTokens(check.sub, check.name);
 
     res.cookie('refresh_token', tokens.refresh_token, {
       maxAge: 7 * 24 * 60 * 1000,
@@ -138,6 +118,11 @@ export class AuthService {
     });
 
     return tokens;
+  }
+
+  async getAll() {
+    const users = await this.prisma.user.findMany();
+    return users;
   }
 
   private async getTokens(userId: number, name: string): Promise<Tokens> {
